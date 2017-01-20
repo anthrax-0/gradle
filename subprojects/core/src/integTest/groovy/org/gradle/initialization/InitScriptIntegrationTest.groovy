@@ -23,6 +23,8 @@ import org.gradle.test.fixtures.file.TestFile
 import org.gradle.test.fixtures.plugin.PluginBuilder
 import spock.lang.Issue
 
+import static org.gradle.util.TextUtil.normaliseFileSeparators
+
 @LeaksFileHandles
 class InitScriptIntegrationTest extends AbstractIntegrationSpec {
 
@@ -77,7 +79,7 @@ class InitScriptIntegrationTest extends AbstractIntegrationSpec {
 
     def 'init script can specify plugin repositories'() {
         executer.requireOwnGradleUserHomeDir()
-        new TestFile(executer.gradleUserHomeDir, "init.gradle") << "gradle.pluginRepositories { maven { it.url '${getMavenRepo().getRootDir().absolutePath}'} }"
+        new TestFile(executer.gradleUserHomeDir, "init.gradle") << "gradle.pluginRepositories { maven { it.url '${normaliseFileSeparators(mavenRepo.rootDir.absolutePath)}'} }"
 
         def pluginBuilder = new PluginBuilder(new TestFile(executer.testDirectoryProvider.testDirectory, 'plugin-repo'))
         pluginBuilder.addPlugin("", 'custom')
@@ -98,8 +100,8 @@ class InitScriptIntegrationTest extends AbstractIntegrationSpec {
 
     def 'when plugins come from multiple repos, it will pick the first'() {
         executer.requireOwnGradleUserHomeDir()
-        new TestFile(executer.gradleUserHomeDir, "init.gradle") << "gradle.pluginRepositories { maven { it.url '${getMavenRepo().getRootDir().absolutePath}'} }"
-        new TestFile(executer.testDirectoryProvider.testDirectory, "settings.gradle") << "pluginRepositories { ivy { it.url '${getIvyRepo().getRootDir().absolutePath}'} }"
+        new TestFile(executer.gradleUserHomeDir, "init.gradle") << "gradle.pluginRepositories { maven { it.url '${normaliseFileSeparators(mavenRepo.rootDir.absolutePath)}'} }"
+        new TestFile(executer.testDirectoryProvider.testDirectory, "settings.gradle") << "pluginRepositories { ivy { it.url '${normaliseFileSeparators(ivyRepo.rootDir.absolutePath)}'} }"
 
         def pluginBuilder1 = new PluginBuilder(new TestFile(executer.testDirectoryProvider.testDirectory, 'plugin1-repo'))
         pluginBuilder1.addPlugin("", 'custom')
